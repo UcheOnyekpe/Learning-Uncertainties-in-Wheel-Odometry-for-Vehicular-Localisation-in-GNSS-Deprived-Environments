@@ -170,8 +170,8 @@ for opt_ in range(len(par)):
     a10hr=np.amin(cm_runshr,axis=0)
     a10ra=np.amin(cm_runsra,axis=0)
     a10cia=np.amin(cm_runscia,axis=0)
+    
     a10hb=np.amin(cm_runshb,axis=0)
-
     a10slr=np.amin(cm_runsslr,axis=0)
     a10swr=np.amin(cm_runswr,axis=0)
 
@@ -180,8 +180,8 @@ for opt_ in range(len(par)):
     a10hrp=np.amin(cm_runshrdr,axis=0)
     a10rap=np.amin(cm_runsradr,axis=0)
     a10ciap=np.amin(cm_runsciadr,axis=0)
+    
     a10hbp=np.amin(cm_runshbdr,axis=0)
-
     a10slrp=np.amin(cm_runsslrdr,axis=0)
     a10swrp=np.amin(cm_runswrdr,axis=0)
 
