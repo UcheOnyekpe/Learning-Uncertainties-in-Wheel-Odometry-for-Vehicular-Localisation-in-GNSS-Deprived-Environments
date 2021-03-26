@@ -1,1 +1,8 @@
 # Learning-Uncertainties-in-Wheel-Odometry-for-Vehicular-Localisation-in-GNSS-Deprived-Environments
+Please Cite
+U. Onyekpe, V. Palade, S. Kanarachos and S. -R. G. Christopoulos, "Learning Uncertainties in Wheel Odometry for Vehicular Localisation in GNSS Deprived Environments," 2020 19th IEEE International Conference on Machine Learning and Applications (ICMLA), Miami, FL, USA, 2020, pp. 741-746, doi: 10.1109/ICMLA51294.2020.00121.
+
+https://ieeexplore.ieee.org/document/9356239
+
+**Abstract**
+Inertial Navigation Systems (INS) are commonly used to localise vehicles in the absence of Global Navigation Satellite Systems (GNSS) signals. However, they are plagued by noises, which grow exponentially over time during the triple integration computation, leading to a poor navigation solution. We explore the wheel encoder as an alternative to the accelerometer of the INS for positional tracking, and for the first time investigate the capability of deep learning using the Long Short-Term Memory (LSTM) neural network to learn the uncertainty inherent in the wheel speed measurements. These uncertainties could be manifested as changes in the tyre size or pressure, or wheel slips as a result of worn out tyres or wet/muddy road drive. The proposed solution has less integration steps in its computation, therefore providing the potential for a more accurate positioning estimation. Through a performance evaluation on several challenging scenarios for vehicular driving, such as hard braking, quick changes in vehicular acceleration, and wet/muddy road driving, we show that the wheel speed-based positioning approach is able to achieve up to 81.46 % improvement compared to the INS accelerometer approach.
