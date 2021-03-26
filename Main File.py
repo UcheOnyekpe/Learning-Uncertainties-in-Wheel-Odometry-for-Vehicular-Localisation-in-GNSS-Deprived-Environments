@@ -11,9 +11,7 @@ import time
 import pandas as pd
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
-#from keras.optimizers.schedules import ExponentialDecay
-print('a')
-#from function_filesdispV4kitti import *
+
 from function_filesdispV4wsforqgrupaper import *
 from IO_VNB_Dataset import *
 
