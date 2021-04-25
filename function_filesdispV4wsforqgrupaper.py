@@ -43,185 +43,8 @@ from tensorflow.python.keras.utils import generic_utils
 from tensorflow.python.ops import control_flow_ops
 from tensorflow.python.ops import math_ops
 from tensorflow.python.ops import random_ops
-#from tensorflow.python.util.tf_export import keras_export
-#from keras import learning_rate_schedule
-#def exp_decay(epoch):
-#    lrate=learning_rate*np.exp(-decay_rate*epoch)
-#    return lrate
-#lrate=LearningRateScheduler(exp_decay)
-#callbacks_list=[loss_history, lr_rate]
-#callbacks=callbacks_list
-#class LearningRateSchedule(object):
-#  """A serializable learning rate decay schedule.
-#  `LearningRateSchedule`s can be passed in as the learning rate of optimizers in
-#  `tf.keras.optimizers`. They can be serialized and deserialized using
-#  `tf.keras.optimizers.schedules.serialize` and
-#  `tf.keras.optimizers.schedules.deserialize`.
-#  """
-#
-#  @abc.abstractmethod
-#  def __call__(self, step):
-#    raise NotImplementedError("Learning rate schedule must override __call__")
-#
-#  @abc.abstractmethod
-#  def get_config(self):
-#    raise NotImplementedError("Learning rate schedule must override get_config")
-#
-#  @classmethod
-#  def from_config(cls, config):
-#    """Instantiates a `LearningRateSchedule` from its config.
-#    Args:
-#        config: Output of `get_config()`.
-#    Returns:
-#        A `LearningRateSchedule` instance.
-#    """
-#    return cls(**config)
-#class ExponentialDecay(LearningRateSchedule):
-#  """A LearningRateSchedule that uses an exponential decay schedule."""
-#
-#  def __init__(
-#      self,
-#      initial_learning_rate,
-#      decay_steps,
-#      decay_rate,
-#      staircase=False,
-#      name=None):
-#    """Applies exponential decay to the learning rate.
-#    When training a model, it is often recommended to lower the learning rate as
-#    the training progresses. This schedule applies an exponential decay function
-#    to an optimizer step, given a provided initial learning rate.
-#    The schedule a 1-arg callable that produces a decayed learning
-#    rate when passed the current optimizer step. This can be useful for changing
-#    the learning rate value across different invocations of optimizer functions.
-#    It is computed as:
-#    ```python
-#    def decayed_learning_rate(step):
-#      return initial_learning_rate * decay_rate ^ (step / decay_steps)
-#    ```
-#    If the argument `staircase` is `True`, then `step / decay_steps` is
-#    an integer division and the decayed learning rate follows a
-#    staircase function.
-#    You can pass this schedule directly into a `tf.keras.optimizers.Optimizer`
-#    as the learning rate.
-#    Example: When fitting a Keras model, decay every 100000 steps with a base
-#    of 0.96:
-#    ```python
-#    initial_learning_rate = 0.1
-#    lr_schedule = tf.keras.optimizers.schedules.ExponentialDecay(
-#        initial_learning_rate,
-#        decay_steps=100000,
-#        decay_rate=0.96,
-#        staircase=True)
-#    model.compile(optimizer=tf.keras.optimizers.SGD(learning_rate=lr_schedule),
-#                  loss='sparse_categorical_crossentropy',
-#                  metrics=['accuracy'])
-#    model.fit(data, labels, epochs=5)
-#    ```
-#    The learning rate schedule is also serializable and deserializable using
-#    `tf.keras.optimizers.schedules.serialize` and
-#    `tf.keras.optimizers.schedules.deserialize`.
-#    Args:
-#      initial_learning_rate: A scalar `float32` or `float64` `Tensor` or a
-#        Python number.  The initial learning rate.
-#      decay_steps: A scalar `int32` or `int64` `Tensor` or a Python number.
-#        Must be positive.  See the decay computation above.
-#      decay_rate: A scalar `float32` or `float64` `Tensor` or a
-#        Python number.  The decay rate.
-#      staircase: Boolean.  If `True` decay the learning rate at discrete
-#        intervals
-#      name: String.  Optional name of the operation.  Defaults to
-#        'ExponentialDecay'.
-#    Returns:
-#      A 1-arg callable learning rate schedule that takes the current optimizer
-#      step and outputs the decayed learning rate, a scalar `Tensor` of the same
-#      type as `initial_learning_rate`.
-#    """
-#    super(ExponentialDecay, self).__init__()
-#    self.initial_learning_rate = initial_learning_rate
-#    self.decay_steps = decay_steps
-#    self.decay_rate = decay_rate
-#    self.staircase = staircase
-#    self.name = name
-#
-#  def __call__(self, step):
-#    with ops.name_scope_v2(self.name or "ExponentialDecay") as name:
-#      initial_learning_rate = ops.convert_to_tensor_v2(
-#          self.initial_learning_rate, name="initial_learning_rate")
-#      dtype = initial_learning_rate.dtype
-#      decay_steps = math_ops.cast(self.decay_steps, dtype)
-#      decay_rate = math_ops.cast(self.decay_rate, dtype)
-#
-#      global_step_recomp = math_ops.cast(step, dtype)
-#      p = global_step_recomp / decay_steps
-#      if self.staircase:
-#        p = math_ops.floor(p)
-#      return math_ops.multiply(
-#          initial_learning_rate, math_ops.pow(decay_rate, p), name=name)
-#
-#  def get_config(self):
-#    return {
-#        "initial_learning_rate": self.initial_learning_rate,
-#        "decay_steps": self.decay_steps,
-#        "decay_rate": self.decay_rate,
-#        "staircase": self.staircase,
-#        "name": self.name
-#    }
-# 
-def GRU_model(x,y, input_dim,output_dim, seq_dim, batch_size, num_epochs, dropout, h2, learning_rate, l1_, l2_, nfr, decay_rate, momentum, decay_steps):
-    start=time.time()
-    regressor = Sequential()
-    regressor.add(GRU(units =h2,input_shape = (x.shape[1], input_dim), activation="tanh", recurrent_activation="softmax", use_bias=True, kernel_initializer="glorot_uniform", recurrent_initializer="orthogonal", recurrent_dropout=0, kernel_regularizer=regularizers.l1_l2(l1=l1_, l2=l2_) , return_sequences = True))
-    regressor.add(Dropout(dropout))
-    regressor.add(GRU(units = h2, activation="tanh", recurrent_activation="sigmoid", use_bias=True, kernel_initializer="glorot_uniform", recurrent_initializer="orthogonal", recurrent_dropout=dropout, kernel_regularizer=regularizers.l1_l2(l1=l1_, l2=l2_)))
-    adamax=optimizers.Adam(lr=learning_rate)#, beta_1=0.9, beta_2=0.99)     
-    regressor.add(Dense(units = output_dim, activation='linear'))
-    regressor.compile(optimizer = adamax, loss = 'mean_absolute_error')
-
-    def exp_decay(epoch):
-        lrate=learning_rate*np.exp(-decay_rate*epoch)
-        return lrate
-    lr_rt=LearningRateScheduler(exp_decay)
-    loss_history=History()
-    callbacks_list=[loss_history, lr_rt]    
-    print(regressor.summary())
-    history = regressor.fit(x, y, epochs = num_epochs, callbacks=callbacks_list, batch_size = batch_size, validation_split=0.005) #iterates 50 times    
-    plt.plot(history.history['loss'], label='train')
-    plt.legend()
-    plt.savefig('GRU_LOSS'+ str(nfr))
-    plt.show()
-    end=time.time()
-    Computation_time=end-start
-    return Computation_time, regressor
-
-def RNN_model(x,y, input_dim,output_dim, seq_dim, batch_size, num_epochs, dropout, h2, learning_rate, l1_, l2_, nfr, decay_rate, momentum, decay_steps):
-
-    start=time.time()
-    regressor = Sequential()
-    regressor.add(SimpleRNN(units =h2,input_shape = (x.shape[1], input_dim), activation="tanh", use_bias=True, kernel_initializer="glorot_uniform", recurrent_initializer="orthogonal", recurrent_dropout=0, kernel_regularizer=regularizers.l1_l2(l1=l1_, l2=l2_) , return_sequences = True))
-    regressor.add(Dropout(dropout))
-    regressor.add(SimpleRNN(units = h2, activation="tanh", use_bias=True, kernel_initializer="glorot_uniform", recurrent_initializer="orthogonal", recurrent_dropout=dropout, kernel_regularizer=regularizers.l1_l2(l1=l1_, l2=l2_)))
-    adamax=optimizers.Adam(lr=learning_rate)#, beta_1=0.9, beta_2=0.99)     
-    regressor.add(Dense(units = output_dim, activation='linear'))
-    regressor.compile(optimizer = adamax, loss = 'mean_absolute_error')
-
-    def exp_decay(epoch):
-        lrate=learning_rate*np.exp(-decay_rate*epoch)
-        return lrate
-    lr_rt=LearningRateScheduler(exp_decay)
-    loss_history=History()
-    callbacks_list=[loss_history, lr_rt]    
-    print(regressor.summary())
-    history = regressor.fit(x, y, epochs = num_epochs, callbacks=callbacks_list, batch_size = batch_size, validation_split=0.005) #iterates 50 times    
-    plt.plot(history.history['loss'], label='train')
-    plt.legend()
-    plt.savefig('RNN_LOSS'+ str(nfr))
-    plt.show()
-    end=time.time()
-    Computation_time=end-start
-    return Computation_time, regressor
 
 
-#kernel_regularizer=regularizers.l1_l2(l1=l1_, l2=l2_) , 
 def LSTM_model(x,y, input_dim,output_dim, seq_dim, batch_size, num_epochs, dropout, h2, learning_rate, l1_, l2_, nfr, decay_rate, momentum, decay_steps):
     start=time.time()
     regressor = Sequential()
@@ -246,124 +69,6 @@ def LSTM_model(x,y, input_dim,output_dim, seq_dim, batch_size, num_epochs, dropo
     end=time.time()
     Computation_time=end-start
     return Computation_time, regressor
-
-def BGRU_model(x,y, input_dim,output_dim, seq_dim, batch_size, num_epochs, dropout, h2, learning_rate, l1_, l2_, nfr, decay_rate, momentum, decay_steps):
-    start=time.time()
-    regressor = Sequential()
-    regressor.add(Bidirectional(GRU(units =h2,input_shape = (x.shape[1], input_dim), activation="tanh", recurrent_activation="softmax", use_bias=True, kernel_initializer="glorot_uniform", recurrent_initializer="orthogonal", recurrent_dropout=dropout, kernel_regularizer=regularizers.l1_l2(l1=l1_, l2=l2_) , return_sequences = True)))
-    regressor.add(Dropout(dropout))
-    regressor.add(Bidirectional(GRU(units = h2, activation="tanh", recurrent_activation="sigmoid", use_bias=True, kernel_initializer="glorot_uniform", recurrent_initializer="orthogonal", recurrent_dropout=dropout, kernel_regularizer=regularizers.l1_l2(l1=l1_, l2=l2_))))
-     
-    adamax=optimizers.Adamax(lr=learning_rate)#, beta_1=0.9, beta_2=0.99)     
-    regressor.add(Dense(units = output_dim, activation='linear'))
-    regressor.compile(optimizer = adamax, loss = 'mean_absolute_error')
-    def exp_decay(epoch):
-        lrate=learning_rate*np.exp(-decay_rate*epoch)
-        return lrate
-    lr_rt=LearningRateScheduler(exp_decay)
-    loss_history=History()
-    callbacks_list=[loss_history, lr_rt]    
-    
-    history = regressor.fit(x, y, epochs = num_epochs, callbacks=callbacks_list, batch_size = batch_size, validation_split=0.005) #iterates 50 times    
-    print(regressor.summary())
-    plt.plot(history.history['loss'], label='train')
-    plt.legend()
-    plt.savefig('BGRU_LOSS'+ str(nfr))
-    plt.show()
-    end=time.time()
-    Computation_time=end-start
-    return Computation_time, regressor
-
-def BLSTM_model(x,y, input_dim,output_dim, seq_dim, batch_size, num_epochs, dropout, h2, learning_rate, l1_, l2_, nfr, decay_rate, momentum, decay_steps):
-    start=time.time()
-    regressor = Sequential()
-    regressor.add(Bidirectional(LSTM(units =h2,input_shape = (x.shape[1], input_dim), activation="tanh", recurrent_activation="softmax", use_bias=True, kernel_initializer="glorot_uniform", recurrent_initializer="orthogonal", recurrent_dropout=dropout, kernel_regularizer=regularizers.l1_l2(l1=l1_, l2=l2_) , return_sequences = True)))
-    regressor.add(Dropout(dropout))
-    regressor.add(Bidirectional(LSTM(units = h2, activation="tanh", recurrent_activation="sigmoid", use_bias=True, kernel_initializer="glorot_uniform", recurrent_initializer="orthogonal", recurrent_dropout=dropout, kernel_regularizer=regularizers.l1_l2(l1=l1_, l2=l2_))))
-     
-    adamax=optimizers.Adamax(lr=learning_rate)#, beta_1=0.9, beta_2=0.99)     
-    regressor.add(Dense(units = output_dim, activation='linear'))
-    regressor.compile(optimizer = adamax, loss = 'mean_absolute_error')
-    def exp_decay(epoch):
-        lrate=learning_rate*np.exp(-decay_rate*epoch)
-        return lrate
-    lr_rt=LearningRateScheduler(exp_decay)
-    loss_history=History()
-    callbacks_list=[loss_history, lr_rt]    
-    
-    history = regressor.fit(x, y, epochs = num_epochs, callbacks=callbacks_list, batch_size = batch_size, validation_split=0.005) #iterates 50 times    
-    print(regressor.summary())
-    plt.plot(history.history['loss'], label='train')
-    plt.legend()
-    plt.savefig('BLSTM_LOSS'+ str(nfr))
-    plt.show()
-    end=time.time()
-    Computation_time=end-start
-    return Computation_time, regressor
-
-def IDNN_model(x,y, input_dim,output_dim, seq_dim, batch_size, num_epochs, dropout, h2, learning_rate, l1_, l2_, nfr, decay_rate, momentum, decay_steps):
-    start=time.time()
-    regressor = Sequential()
-    regressor.add(Dense(units =h2, kernel_initializer = 'glorot_uniform', activation = 'tanh', input_dim=seq_dim*input_dim))
-    regressor.add(Dropout(dropout))  
-    regressor.add(Dense(units = h2, activation = 'relu'))
-#    regressor.add(Dense(units = h2, activation = 'linear'))
-    adamax=optimizers.Adamax(lr=learning_rate)#, beta_1=0.9, beta_2=0.99)     
-    regressor.add(Dense(units = output_dim, activation='linear'))
-    regressor.compile(optimizer = adamax, loss = 'mean_absolute_error')
-    def exp_decay(epoch):
-        lrate=learning_rate*np.exp(-decay_rate*epoch)
-        return lrate
-    lr_rt=LearningRateScheduler(exp_decay)
-    loss_history=History()
-    callbacks_list=[loss_history, lr_rt]    
-    print(regressor.summary())
-    history = regressor.fit(x, y, epochs = num_epochs, callbacks=callbacks_list, batch_size = batch_size, validation_split=0.005) #iterates 50 times    
-#    history = regressor.fit(x, y, epochs = num_epochs,callbacks=callbacks_list, batch_size = batch_size, validation_split=0.005) #iterates 50 times    
-    plt.plot(history.history['loss'], label='train')
-    plt.legend()
-    plt.savefig('RNN_LOSS'+ str(nfr))
-    plt.show()
-    end=time.time()
-    Computation_time=end-start
-    return Computation_time, regressor
-
-def MLNN_model(x,y, input_dim,output_dim, seq_dim, batch_size, num_epochs, dropout, h2, learning_rate, l1_, l2_, NFR, decay_rate, momentum, decay_steps):
-    start=time.time()
-    regressor = Sequential()
-    regressor.add(Dense(units =h2, kernel_initializer = 'glorot_uniform', activation = 'tanh', kernel_regularizer=regularizers.l1_l2(l1=l1_, l2=l2_), input_dim=input_dim))
-    regressor.add(Dropout(dropout)) 
-    regressor.add(Dense(units = h2, kernel_initializer = 'glorot_uniform', activation='tanh'))
-#    regressor.add(Dropout(dropout)) 
-#    regressor.add(Dense(units = h2, activation='tanh'))    
-#    lr_rt=ExponentialDecay(initial_learning_rate=learning_rate, decay_steps=decay_steps, decay_rate=decay_rate, staircase=True)
-    adamax=optimizers.Adamax(lr=learning_rate, beta_1=0.9, beta_2=0.99) 
-    sgd=optimizers.SGD(lr=learning_rate)#, momentum=momentum)#, decay=decay_rate)      
-    regressor.add(Dense(units = output_dim, activation='linear'))
-    regressor.compile(optimizer = sgd, loss = 'mean_absolute_error')
-    def exp_decay(epoch):
-        lrate=learning_rate*np.exp(-decay_rate*epoch)
-        return lrate
-    lr_rt=LearningRateScheduler(exp_decay)
-    loss_history=History()
-    callbacks_list=[loss_history, lr_rt]
-#    callbacks=callbacks_list
-    print(regressor.summary())
-    history = regressor.fit(x, y, epochs = num_epochs,callbacks=callbacks_list,  batch_size = batch_size, validation_split=0.005) #iterates 50 times    
-    plt.plot(history.history['loss'], label='train')
-    plt.legend()
-    plt.show()
-    end=time.time()
-    Computation_time=end-start
-    return Computation_time, regressor
-
-def gps_clean(data, vmax):
-    for i in range(len(data)-1):
-        if (data[i]>vmax or data[i]<-vmax) and (data[i+1]>vmax or data[i+1]<-vmax) :
-            data[i]=data[i-1]
-        elif (data[i]>vmax or data[i]<-vmax) and (data[i+1]<vmax or data[i+1]>-vmax):
-            data[i]=data[i+1]
-    return data
 
 
 def seq_data_man(data, batch_size, seq_dim, input_dim, output_dim):
@@ -429,32 +134,6 @@ def absolute_disp(lat, long):
         k.append(kk)
     return np.reshape(k,(len(k),1))
 
-def integrate(data, sf):
-    dx=sf/10
-    arr=[]
-    for i in range(1,len(data)):
-        y=data[i-2:i]
-
-        intg=np.trapz(y, dx=dx, axis=0)
-        arr.append(intg)
-    return np.reshape(arr,(len(arr),1))# *1000000
-
-#def integrate(data, sf):
-#    dx=sf/10
-#    arr=[]
-#    for i in range(1,len(data)):
-#        y=data[:i]
-#
-#        intg=np.trapz(y, dx=dx, axis=0)
-#        arr.append(intg)
-#    return np.reshape(arr,(len(arr),1))# *1000000
-
-def head_clean(angle):
-    for i in range(1,len(angle)):
-        if (angle[i]/angle[i-1])>180 or (angle[i-1]/angle[i])>180:
-            angle[i]=angle[i-1]
-    return angle
-
 
 def Get_Cummulative(num):
     l=[]
@@ -464,47 +143,7 @@ def Get_Cummulative(num):
         l.append(g)
     return (np.array(l))#/1000
 
-def diff(data):
-    x=[]
-    for i in range(1,len(data)):
-        a=data[i]-data[i-1]
-        x.append(a)
-    return np.reshape(x,(len(x),1))
-def clean(data):
-    value=40
-    for i in range(1,len(data)):
-        if data[i]>value:
-            data[i]=value
-        elif data[i]<-value:
-            data[i]=-value
-    return np.array(data)
 
-#def clean(data):
-#    for i in range(1,len(data)):
-#        if data[i]>40:
-#            data[i]=40
-#    return np.array(data)
-            
-def get_average(data,avg):
-    x=[]
-    data=data*1000
-#    print(data.shape)
-    for i in range(avg, len(data)+avg, avg):
-#        print(i)
-        a=(np.sum(data[i-avg:i]))/avg
-#        print(a)
-        x.append(a)
-    return (np.reshape(x,(len(x),1)))/1000
-
-def average_vel(init, vel):
-    a=(vel[0]+init)/2
-    k=np.zeros(len(vel))
-#    k=[]
-    k[0]=a#.append(a)
-    for i in range(1,len(vel)):
-        a=(vel[i]+vel[i-1])/2
-        k[1]=a
-    return np.reshape(k,(len(k),1))
 def sample_freq1(data,sf):
     k=[]
 #    x=[]
@@ -792,7 +431,7 @@ def get_graph(s,t, labels, labelt, labelx, labely, labeltitle,no):#s, ins, t=pre
     
 def get_crse(x,y,z,t, label, mode,no):#x=gps, y=ins, z=pred
     eins=np.sqrt(np.power(x,2))#np.sqrt(np.power(x-y,2))
-    epred=np.sqrt(np.power(z,2))#np.sqrt(np.power(x-z,2))
+    epred=np.sqrt(np.power(x-z,2))#np.sqrt(np.power(x-z,2))
     crse_ins=Get_Cummulative(eins[:t])
     crse_pred=Get_Cummulative(epred[:t])
 #    get_graph(crse_ins, crse_pred, 'INS DR', mode, 'Time (s)', 'CRSE (m)', 'Displacement CRSE for the ' +label,no)
@@ -800,7 +439,7 @@ def get_crse(x,y,z,t, label, mode,no):#x=gps, y=ins, z=pred
 
 def get_cae(x,y,z,t, label, mode,no):
     eins=x#x-y
-    epred=z#x-z
+    epred=x-z
     caeins=Get_Cummulative(eins[:t])
     caepred=Get_Cummulative(epred[:t])   
 #    get_graph(caeins, caepred, 'INS DR', mode, 'Time (s)', 'CAE (m)', 'Displacement CAE for the ' +label,no)
@@ -812,7 +451,7 @@ def get_aeps(x,y,z,t, label, mode,no):
     return (eins/t)[-1], (epred/t)[-1]
 def get_aeir(x,y,z,t, label, mode,no):
     eins=x#x-y
-    epred=z#x-z
+    epred=x-z
     eir_ins=[]
     eir_ins.append(0)
     eir_pred=[]
